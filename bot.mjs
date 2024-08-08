@@ -11,7 +11,7 @@ export default async function bot() {
   const userId = "U0688TRQG4E";
 
   // call hugging face
-  const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
+  // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
 
   // fetch channel history
   async function getChannelHistory(channelId) {
