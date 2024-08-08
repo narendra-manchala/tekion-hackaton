@@ -32,7 +32,8 @@ export default async function bot() {
 
   try {
     function filterMessagesByUser(messages, userId) {
-      return messages.filter((message) => message.user === userId);
+      const mentionPattern = new RegExp(`<@${userId}>`, 'i');
+      return messages.filter((message) => mentionPattern.test(message.text));
     }
     const allMessages = await getChannelHistory(channelId);
     const userMessages = filterMessagesByUser(allMessages, userId);
