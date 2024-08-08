@@ -2,17 +2,10 @@ import slackApp from "./slackApp.mjs";
 import axios from "axios";
 
 export default async function bot() {
-  const huggingfaceToken = process.env.HUGGINGFACE_TOKEN;
-  const apiUrl =
-    "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
-  const headers = { Authorization: `Bearer ${huggingfaceToken}` };
 
   const channelId = "C06AVC60TEU";
   const userId = "U0688TRQG4E";
-
-  // call hugging face
-  // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
-
+  
   // fetch channel history
   async function getChannelHistory(channelId) {
     let conversationHistory = [];
@@ -21,7 +14,7 @@ export default async function bot() {
 
     while (hasMoreMessages) {
       try {
-        const result = await app.client.conversations.history({
+        const result = await slackApp.client.conversations.history({
           channel: channelId,
           cursor: nextCursor,
         });
@@ -38,6 +31,9 @@ export default async function bot() {
   }
 
   try {
+    function filterMessagesByUser(messages, userId) {
+      return messages.filter((message) => message.user === userId);
+    }
     const allMessages = await getChannelHistory(channelId);
     const userMessages = filterMessagesByUser(allMessages, userId);
 
@@ -69,7 +65,7 @@ export default async function bot() {
 
     // console.log("completion", completion);
 
-    await app.client.chat.postEphemeral({
+    await slackApp.client.chat.postEphemeral({
       channel: channelId,
       user: userId,
       text: msg,
