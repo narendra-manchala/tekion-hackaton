@@ -1,4 +1,6 @@
-/* GET home page. */
+import slackApp from "./slackApp.mjs";
+import axios from "axios";
+
 export default async function bot() {
   const huggingfaceToken = process.env.HUGGINGFACE_TOKEN;
   const apiUrl =
