@@ -1,6 +1,6 @@
 import pkg from "@slack/bolt";
-const { App: SlackBolt } = pkg;
 import "dotenv/config";
+const { App: SlackBolt } = pkg;
 
 const slackApp = new SlackBolt({
   token: process.env.SLACK_BOT_TOKEN,

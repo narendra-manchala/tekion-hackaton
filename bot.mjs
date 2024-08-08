@@ -1,5 +1,6 @@
 import slackApp from "./slackApp.mjs";
 import axios from "axios";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function bot() {
   const huggingfaceToken = process.env.HUGGINGFACE_TOKEN;
@@ -7,11 +8,36 @@ export default async function bot() {
     "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
   const headers = { Authorization: `Bearer ${huggingfaceToken}` };
 
+  const app = slackApp;
   const channelId = "C06AVC60TEU";
-  const userId = "U0688TRQG4E";
+  // const userId = "U0688TRQG4E";
+  // const channelId = "C07FXUT4BJS";
+  const userId =   "U0688SKTD2S";
 
   // call hugging face
   // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
+
+
+  function geminiInit() {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+  }
+  geminiInit();
+
+  // Run prompts
+  async function run(p) {
+    const prompt = p || "Write a story about an AI and magic"
+  
+    const result = await model.generateContent(`Summarize \n ${prompt}`);
+    const response = await result.response;
+    const text = response.text();
+    console.log(text);
+    postMessage(text);
+  }
+
+  function filterMessagesByUser(messages, userId) {
+    return messages.filter((message) => message.user === userId);
+  }
 
   // fetch channel history
   async function getChannelHistory(channelId) {
@@ -60,7 +86,8 @@ export default async function bot() {
 
     const msg = formatMessagesWithLinks(userMessages);
     console.log("msg", msg);
-
+    await run(msg);
+    
     // TODO: Not working, no limit available
     // const completion = await openai.chat.completions.create({
     //   messages: [{ role: "system", content: "what is ai" }],
@@ -69,13 +96,31 @@ export default async function bot() {
 
     // console.log("completion", completion);
 
+    /*     
     await app.client.chat.postEphemeral({
       channel: channelId,
       user: userId,
-      text: msg,
+      text: summary,
     });
     return "Posted data successfully.";
+    */
+    
   } catch (error) {
-    console.error("Error fetching channel history:", error);
+    console.error("Error fetching channel history:", error); 
+  }
+
+
+  async function postMessage (summary) {
+    try {
+      await app.client.chat.postEphemeral({
+        channel: channelId,
+        user: userId,
+        text: summary,
+      });
+      return "Posted data successfully.";
+    } catch (error) {
+      console.error("Error posting message", error);
+    }
   }
 }
+
