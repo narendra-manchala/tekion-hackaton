@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon appNew.mjs"
+    "start": "nodemon app.mjs"
   },
   "dependencies": {
     "@slack/bolt": "^3.19.0",
