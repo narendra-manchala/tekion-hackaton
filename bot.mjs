@@ -1,5 +1,5 @@
 /* GET home page. */
-export default async function Bot() {
+export default async function bot() {
   const huggingfaceToken = process.env.HUGGINGFACE_TOKEN;
   const apiUrl =
     "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
