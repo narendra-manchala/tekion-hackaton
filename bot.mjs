@@ -146,7 +146,7 @@ slackApp.message('hello', async ({ message, say }) => {
         },
       ],
     });
-    let result = await chat.sendMessage(`who asked to connect for brainstorming?`);
+    let result = await chat.sendMessage(`${message.text}`);
 
     console.log('context', context);
     console.log('------------->', result.response.text());
