@@ -4,7 +4,7 @@ import "dotenv/config";
 const versionId = 'Release-2024.08.1.0';
 const projectKey = 'GMDRP';
 const jiraBaseUrl = 'https://tekion.atlassian.net/rest/api/3/search';
-const jiraAuth = Buffer.from(process.env.JIRA_AUTH_TOKEN).toString('base64');
+const jiraAuth = Buffer.from(process.env.JIRA_TOKEN).toString('base64');
 
 export async function fetchJira() {
     try {
