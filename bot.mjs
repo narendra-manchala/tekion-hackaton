@@ -3,10 +3,6 @@ import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function bot() {
-  const huggingfaceToken = process.env.HUGGINGFACE_TOKEN;
-  const apiUrl =
-    "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6";
-  const headers = { Authorization: `Bearer ${huggingfaceToken}` };
 
   const app = slackApp;
   const channelId = "C06AVC60TEU";
@@ -47,7 +43,7 @@ export default async function bot() {
 
     while (hasMoreMessages) {
       try {
-        const result = await app.client.conversations.history({
+        const result = await slackApp.client.conversations.history({
           channel: channelId,
           cursor: nextCursor,
         });
@@ -64,6 +60,10 @@ export default async function bot() {
   }
 
   try {
+    function filterMessagesByUser(messages, userId) {
+      const mentionPattern = new RegExp(`<@${userId}>`, 'i');
+      return messages.filter((message) => mentionPattern.test(message.text));
+    }
     const allMessages = await getChannelHistory(channelId);
     const userMessages = filterMessagesByUser(allMessages, userId);
 
