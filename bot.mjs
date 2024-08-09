@@ -28,7 +28,8 @@ async function run(p, callback) {
 export default async function bot() {  
   // const channelId = "C06AVC60TEU";
   // const userId = "U0688TRQG4E";
-  const channelId = "C07DT9Y8754";
+  // const channelId = "C07DT9Y8754";
+  const channelId = "C06CDJDL97Y";
   const userId =   "U0688SKTD2S";
 
   // call hugging face
@@ -146,25 +147,32 @@ slackApp.message('hello', async ({ message, say }) => {
         },
       ],
     });
-    let result = await chat.sendMessage(`${message.text}`);
-
-    console.log('context', context);
-    console.log('------------->', result.response.text());
-    await say(`${result.response.text()}`);
+    // let result = await chat.sendMessage(`${message.text}`);
+    // await say(`Analysing data...`);
+    // const result = await model.generateContent(`Summarize \n ${context}`);
+    // console.log('context', context);
+    // console.log('------------->', result.response.text());
+    // await say(`${result.response.text()}`);
   } catch (e) {
     console.log(e);
   }
 });
 
 // interactive chat
-slackApp.message('siri', async ({ message, say }) => {
+slackApp.message('??', async ({ message, say }) => {
   // say() sends a message to the channel where the event was triggered
   try {
-    console.log('Interactivity... ');
-    console.log('-------------------');
-    
+    context = await bot();
+    chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: context }],
+        },
+      ],
+    });
     console.log(message);
-    let result = await chat?.sendMessage(`${message.text}`);
+    let result = await chat?.sendMessage(`what is the release branch for vehicle inventory?`);
     console.log('context', context);
     console.log('------------->', result.response.text());
     await say(`${result.response.text()}`);
