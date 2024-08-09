@@ -12,6 +12,8 @@ const slackApp = new SlackBolt({
   token: process.env.SLACK_BOT_TOKEN,
   socketMode: true,
   appToken: process.env.SLACK_APP_TOKEN,
+  signingSecret: process.env.SIGNING_SECRET,
+  port: process.env.PORT || 3001
 });
 
   //shortcut feature
@@ -53,5 +55,32 @@ const slackApp = new SlackBolt({
       logger.error("Error handling shortcut:", error);
     }
   });
+  // Message listener
+// Listens to incoming messages that contain "hello"
+slackApp.message('hello', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  console.log('Called...');
+  await say({
+    blocks: [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": `Hey there <@${message.user}>!`
+        },
+        "accessory": {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Click Me"
+          },
+          "action_id": "button_click"
+        }
+      }
+    ],
+    text: `Hey there <@${message.user}>!`
+  });
+});
+
 
 export default slackApp;

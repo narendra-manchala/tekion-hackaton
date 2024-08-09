@@ -4,19 +4,21 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 let genAI;
 let model;
+const app = slackApp;
+
+
+
 
 export default async function bot() {
 
-  const app = slackApp;
-  const channelId = "C06AVC60TEU";
+  
+  // const channelId = "C06AVC60TEU";
   // const userId = "U0688TRQG4E";
-  // const channelId = "C07FXUT4BJS";
+  const channelId = "C07DT9Y8754";
   const userId =   "U0688SKTD2S";
 
   // call hugging face
   // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
-
-
   function geminiInit() {
      genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
      model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
