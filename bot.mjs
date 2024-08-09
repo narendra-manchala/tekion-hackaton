@@ -6,12 +6,24 @@ let genAI;
 let model;
 const app = slackApp;
 
+function geminiInit() {
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+  model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+}
+geminiInit();
 
+// Run prompts
+async function run(p, callback) {
+ const prompt = p || "Write a story about an AI and magic"
 
+ const result = await model.generateContent(`Summarize \n ${prompt}`);
+ const response = await result.response;
+ const text = response.text();
+ console.log(text);
+ callback(text);
+}
 
-export default async function bot() {
-
-  
+export default async function bot() {  
   // const channelId = "C06AVC60TEU";
   // const userId = "U0688TRQG4E";
   const channelId = "C07DT9Y8754";
@@ -19,22 +31,7 @@ export default async function bot() {
 
   // call hugging face
   // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
-  function geminiInit() {
-     genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-     model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
-  }
-  geminiInit();
 
-  // Run prompts
-  async function run(p) {
-    const prompt = p || "Write a story about an AI and magic"
-  
-    const result = await model.generateContent(`Summarize \n ${prompt}`);
-    const response = await result.response;
-    const text = response.text();
-    console.log(text);
-    postMessage(text);
-  }
 
   function filterMessagesByUser(messages, userId) {
     return messages.filter((message) => message.user === userId);
@@ -91,7 +88,7 @@ export default async function bot() {
 
     const msg = formatMessagesWithLinks(userMessages);
     console.log("msg", msg);
-    await run(msg);
+    await run(msg, postMessage);
     
     // TODO: Not working, no limit available
     // const completion = await openai.chat.completions.create({

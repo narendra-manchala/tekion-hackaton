@@ -82,5 +82,15 @@ slackApp.message('hello', async ({ message, say }) => {
   });
 });
 
+// This will match any message that contains 👋
+slackApp.message(':wave:', async ({ message, say }) => {
+  // Handle only newly posted messages here
+  if (message.subtype === undefined
+    || message.subtype === 'bot_message'
+    || message.subtype === 'file_share'
+    || message.subtype === 'thread_broadcast') {
+    await say(`Hello, <@${message.user}>`);
+  }
+});
 
 export default slackApp;
