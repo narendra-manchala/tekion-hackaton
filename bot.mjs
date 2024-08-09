@@ -1,6 +1,7 @@
 import slackApp from "./slackApp.mjs";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { fetchJira } from "./jira.mjs";
 
 let genAI;
 let model;
@@ -156,13 +157,41 @@ slackApp.message('hello', async ({ message, say }) => {
 });
 
 // interactive chat
-slackApp.message('<=>', async ({ message, say }) => {
+slackApp.message('siri', async ({ message, say }) => {
   // say() sends a message to the channel where the event was triggered
   try {
     console.log('Interactivity... ');
     console.log('-------------------');
+    
     console.log(message);
     let result = await chat?.sendMessage(`${message.text}`);
+    console.log('context', context);
+    console.log('------------->', result.response.text());
+    await say(`${result.response.text()}`);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+// 
+slackApp.message('jira', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  try {
+    console.log('Called... ');
+    console.log('-------------------');
+    console.log(message);
+    context = await fetchJira();
+    console.log('===>', JSON.stringify(context));
+    chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: JSON.stringify(context) }],
+        },
+      ],
+    });
+    let result = await chat.sendMessage(`${message.text}`);
+
     console.log('context', context);
     console.log('------------->', result.response.text());
     await say(`${result.response.text()}`);
