@@ -17,80 +17,43 @@ const slackApp = new SlackBolt({
 });
 
   //shortcut feature
-  slackApp.shortcut("summarize-text", async ({ ack, body, client, logger }) => {
-    await ack();
-    try {
-      const { text: messageText, thread_ts: threadTs } = body.message;
-      const channelId = body.channel.id;
+  // slackApp.shortcut("summarize-text", async ({ ack, body, client, logger }) => {
+  //   await ack();
+  //   try {
+  //     const { text: messageText, thread_ts: threadTs } = body.message;
+  //     const channelId = body.channel.id;
   
-      let textToSummarize = messageText;
-      if (threadTs) {
-        textToSummarize = await getThreadMessages(channelId, threadTs);
-      }
+  //     let textToSummarize = messageText;
+  //     if (threadTs) {
+  //       textToSummarize = await getThreadMessages(channelId, threadTs);
+  //     }
   
-      logger.debug(textToSummarize);
-      // const output = await query({ inputs: textToSummarize });
+  //     logger.debug(textToSummarize);
+  //     // const output = await query({ inputs: textToSummarize });
 
-        // call hugging face
-      const huggingfaceRes = await axios.post(apiUrl, textToSummarize, { headers });
-      console.log("huggingfaceRes", huggingfaceRes)
-      const summary = huggingfaceRes.data[0]?.summary_text;
-      console.log(summary);
+  //       // call hugging face
+  //     const huggingfaceRes = await axios.post(apiUrl, textToSummarize, { headers });
+  //     console.log("huggingfaceRes", huggingfaceRes)
+  //     const summary = huggingfaceRes.data[0]?.summary_text;
+  //     console.log(summary);
   
-      await client.chat.postEphemeral({
-        channel: channelId,
-        user: body.user.id,
-        text: "Here is your summary",
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: summary,
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      logger.error("Error handling shortcut:", error);
-    }
-  });
-  // Message listener
-// Listens to incoming messages that contain "hello"
-slackApp.message('hello', async ({ message, say }) => {
-  // say() sends a message to the channel where the event was triggered
-  console.log('Called...');
-  await say({
-    blocks: [
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `Hey there <@${message.user}>!`
-        },
-        "accessory": {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": "Click Me"
-          },
-          "action_id": "button_click"
-        }
-      }
-    ],
-    text: `Hey there <@${message.user}>!`
-  });
-});
-
-// This will match any message that contains 👋
-slackApp.message(':wave:', async ({ message, say }) => {
-  // Handle only newly posted messages here
-  if (message.subtype === undefined
-    || message.subtype === 'bot_message'
-    || message.subtype === 'file_share'
-    || message.subtype === 'thread_broadcast') {
-    await say(`Hello, <@${message.user}>`);
-  }
-});
-
+  //     await client.chat.postEphemeral({
+  //       channel: channelId,
+  //       user: body.user.id,
+  //       text: "Here is your summary",
+  //       blocks: [
+  //         {
+  //           type: "section",
+  //           text: {
+  //             type: "mrkdwn",
+  //             text: summary,
+  //           },
+  //         },
+  //       ],
+  //     });
+  //   } catch (error) {
+  //     logger.error("Error handling shortcut:", error);
+  //   }
+  // });
+  
 export default slackApp;

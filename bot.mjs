@@ -5,6 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 let genAI;
 let model;
 const app = slackApp;
+let context;
 
 function geminiInit() {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
@@ -89,7 +90,7 @@ export default async function bot() {
     const msg = formatMessagesWithLinks(userMessages);
     console.log("msg", msg);
     await run(msg, postMessage);
-    
+    return msg; 
     // TODO: Not working, no limit available
     // const completion = await openai.chat.completions.create({
     //   messages: [{ role: "system", content: "what is ai" }],
@@ -126,3 +127,46 @@ export default async function bot() {
   }
 }
 
+let chat;
+  // Message listener
+// Listens to incoming messages that contain "hello"
+slackApp.message('hello', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  try {
+    console.log('Called... ');
+    console.log('-------------------');
+    console.log(message);
+    context = await bot();
+    chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: context }],
+        },
+      ],
+    });
+    let result = await chat.sendMessage(`who asked to connect for brainstorming?`);
+
+    console.log('context', context);
+    console.log('------------->', result.response.text());
+    await say(`${result.response.text()}`);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+// interactive chat
+slackApp.message('<=>', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  try {
+    console.log('Interactivity... ');
+    console.log('-------------------');
+    console.log(message);
+    let result = await chat?.sendMessage(`${message.text}`);
+    console.log('context', context);
+    console.log('------------->', result.response.text());
+    await say(`${result.response.text()}`);
+  } catch (e) {
+    console.log(e);
+  }
+});
