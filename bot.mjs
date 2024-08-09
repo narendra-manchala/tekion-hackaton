@@ -2,6 +2,9 @@ import slackApp from "./slackApp.mjs";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+let genAI;
+let model;
+
 export default async function bot() {
 
   const app = slackApp;
@@ -15,8 +18,8 @@ export default async function bot() {
 
 
   function geminiInit() {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+     genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+     model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
   }
   geminiInit();
 
