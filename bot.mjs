@@ -15,7 +15,10 @@ function geminiInit() {
 geminiInit();
 
 // Run prompts
-async function run(p, callback) {
+async function run(p, callback, shouldNotPrint) {
+  if(shouldNotPrint) {
+    return;
+  }
  const prompt = p || "Write a story about an AI and magic"
 
  const result = await model.generateContent(`Summarize \n ${prompt}`);
@@ -51,20 +54,20 @@ async function SentryRun(p, callback) {
   const encodedChart = encodeURIComponent(text);
  const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`; 
   await callback(chartUrl);
-   callback('Fetching Explaination....');
+  //  callback('Fetching Explaination....');
 
   run(p, callback)
  }
 
-export default async function bot(channelId) {  
+export default async function bot(channelId = 'C06CDJDL97Y', shouldNotPrint) {  
   // const channelId = "C06AVC60TEU";
   // const userId = "U0688TRQG4E";
   // const channelId = "C06DF2QSBD1";
-  const userId =   "U06BW5ULQ6N";
+  // const userId =   "U06BW5ULQ6N";
+  const userId = "U0688SKTD2S";
 
   // call hugging face
   // const huggingfaceRes = await axios.post(apiUrl, payload, { headers });
-
 
   function filterMessagesByUser(messages, userId) {
     return messages.filter((message) => message.user === userId);
@@ -127,7 +130,7 @@ export default async function bot(channelId) {
       await SentryRun(msg, postMessageSentry);
       return msg; 
     }
-  await run(msg, postMessage);
+  await run(msg, postMessage, shouldNotPrint);
     return msg; 
     // TODO: Not working, no limit available
     // const completion = await openai.chat.completions.create({
@@ -183,11 +186,12 @@ let chat;
 // Listens to incoming messages that contain "hello"
 slackApp.message('hello', async ({ message, say }) => {
   // say() sends a message to the channel where the event was triggered
+  say('Summarizing data...');
   try {
     console.log('Called... ');
     console.log('-------------------');
     console.log(message);
-    context = await bot('C07DT9Y8754');
+    context = await bot('C06CDJDL97Y'); // hello world
     chat = model.startChat({
       history: [
         {
@@ -214,7 +218,7 @@ slackApp.message('Sentry analyze', async ({ message, say }) => {
     console.log('-------------------');
     console.log(message);
     await say(`Analyzing Data...`);
-    context = await bot('C06DF2QSBD1');
+    context = await bot('C06DF2QSBD1'); // Sentry
   } catch (e) {
     console.log(e);
   }
@@ -224,7 +228,7 @@ slackApp.message('Sentry analyze', async ({ message, say }) => {
 slackApp.message('??', async ({ message, say }) => {
   // say() sends a message to the channel where the event was triggered
   try {
-    context = await bot();
+    context = await bot('C06CDJDL97Y', true);
     chat = model.startChat({
       history: [
         {
