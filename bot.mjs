@@ -53,7 +53,8 @@ async function SentryRun(p, callback) {
   console.log(text);
   const encodedChart = encodeURIComponent(text);
  const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`; 
-  await callback(chartUrl);
+ const URL='https://quickchart.io/chart?c=%7B%0A%20%20%20%20%22type%22%3A%20%22bar%22%2C%0A%20%20%20%20%22data%22%3A%20%7B%0A%20%20%20%20%20%20%22labels%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%22TypeError%22%2C%0A%20%20%20%20%20%20%20%20%22SyntaxError%22%2C%0A%20%20%20%20%20%20%20%20%22NetworkError%22%2C%0A%20%20%20%20%20%20%20%20%22Error%3A%20403%22%2C%0A%20%20%20%20%20%20%20%20%22Error%3A%20500%22%2C%0A%20%20%20%20%20%20%20%20%22Error%3A%20404%22%2C%0A%20%20%20%20%20%20%20%20%22Error%3A%20401%22%2C%0A%20%20%20%20%20%20%20%20%22Error%3A%20504%22%2C%0A%20%20%20%20%20%20%20%20%22UnknownError%22%0A%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%22datasets%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%22label%22%3A%20%22Occurrences%22%2C%0A%20%20%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20405%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2066%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20292%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2012%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2019%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2012%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2021%2C%0A%20%20%20%20%20%20%20%20%20%20%20%2018%2C%0A%20%20%20%20%20%20%20%20%20%20%20%201%0A%20%20%20%20%20%20%20%20%20%20%5D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%5D%0A%20%20%20%20%7D%0A%20%20%7D';
+  await callback(URL);
   //  callback('Fetching Explaination....');
 
   run(p, callback)
@@ -239,6 +240,29 @@ slackApp.message('??', async ({ message, say }) => {
     });
     console.log(message);
     let result = await chat?.sendMessage(`what is the release branch for vehicle inventory?`);
+    console.log('context', context);
+    console.log('------------->', result.response.text());
+    await say(`${result.response.text()}`);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+// interactive chat
+slackApp.message('hotfix', async ({ message, say }) => {
+  // say() sends a message to the channel where the event was triggered
+  try {
+    context = await bot('C06CDJDL97Y', true);
+    chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: context }],
+        },
+      ],
+    });
+    console.log(message);
+    let result = await chat?.sendMessage(`when is hotfix branch expected to be shared?`);
     console.log('context', context);
     console.log('------------->', result.response.text());
     await say(`${result.response.text()}`);
